@@ -171,24 +171,24 @@ func fix_auxquicksort(v []int, left int, right int) {
 func rand_auxquicksort(v []int, left int, right int) {
 	if left < right {
 		random := rand.Intn(right)
-		v[random], v[right] = v[right], v[random]
+		v[right], v[random] = v[random], v[right]
 		pivotindex := aux_partition(v, left, right)
-		fix_auxquicksort(v, left, pivotindex-1)
-		fix_auxquicksort(v, pivotindex+1, right)
+		rand_auxquicksort(v, left, pivotindex-1)
+		rand_auxquicksort(v, pivotindex+1, right)
 	}
 }
 
 func aux_partition(v []int, left int, right int) int {
 	pivot := v[right]
-	i := left - 1
+	i := left
 	for j := left; j < right; j++ {
 		if v[j] < pivot {
-			i++
 			v[i], v[j] = v[j], v[i]
+			i++
 		}
 	}
-	v[i+1], v[right] = v[right], v[i+1]
-	return i + 1
+	v[i], v[right] = v[right], v[i]
+	return i
 }
 
 func (l *vetor) quicksort() {
@@ -200,7 +200,7 @@ func (l *vetor) quicksort() {
 	println("\n\nTempo de ordenação do quicksort fixo: ", tempo.Seconds(), "segundos\n")
 
 	start = time.Now()
-	rand_auxquicksort(l.ordenado, 0, len(l.ordenado)-1)
+	rand_auxquicksort(l.ordenado, 0, (len(l.ordenado) - 1))
 	tempo = time.Since(start)
 	println("Tempo de ordenação do quicksort randomizado: ", tempo.Seconds(), "segundos\n")
 }
@@ -214,16 +214,15 @@ func (l *vetor) countingsort() {
 	}
 
 	max := l.ordenado[0]
-	for _, v := range l.ordenado {
-		if v > max {
-			max = v
+	for v := 0; v < len(l.ordenado); v++ {
+		if l.ordenado[v] > max {
+			max = l.ordenado[v]
 		}
 	}
-
 	count := make([]int, max+1)
 
-	for _, v := range l.ordenado {
-		count[v]++
+	for v := 0; v < len(l.ordenado); v++ {
+		count[l.ordenado[v]]++
 	}
 
 	index := 0
@@ -243,7 +242,7 @@ func (l *vetor) countingsort() {
 func main() {
 	i := 10
 	l := &vetor{}
-	l.createV(100000, false)
+	l.createV(100000, true)
 	l.print(true, i)
 
 	l.selectionsort()
